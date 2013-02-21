@@ -32,6 +32,8 @@
 @synthesize longitudeLabel;
 
 -(void) viewDidLoad{
+    // Stronger add remark
+    
     //設定 MapView 的委派
     mapView.delegate          = self;
     //允許縮放地圖
