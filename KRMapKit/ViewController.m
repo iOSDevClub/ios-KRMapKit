@@ -87,6 +87,12 @@
                       withSubtitle:@"旁邊有老虎城"];
     
     [super viewDidLoad];
+    
+    
+    /*
+     * @hello Clone.
+     */
+    
 }
 
 #pragma IBActions
