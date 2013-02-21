@@ -33,6 +33,7 @@
 
 -(void) viewDidLoad{
     // Stronger add remark
+    // Remark 2
     
     //設定 MapView 的委派
     mapView.delegate          = self;
