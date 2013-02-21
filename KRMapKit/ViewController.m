@@ -32,9 +32,6 @@
 @synthesize longitudeLabel;
 
 -(void) viewDidLoad{
-    // Stronger add remark
-    // Remark 2
-    
     //設定 MapView 的委派
     mapView.delegate          = self;
     //允許縮放地圖
@@ -90,23 +87,6 @@
                       withSubtitle:@"旁邊有老虎城"];
     
     [super viewDidLoad];
-    
-    
-    /*
-     * @hello Clone.
-     */
-    
-    /*
-     * @ Yo, Wayne. 
-     *   - #2
-     */
-    
-    /*
-     * 黃紋吸蜜到此一遊
-     */
-    /* 黃紋吸蜜到此二遊*/
-    
-    /* 黃紋吸蜜到此三遊 */
 }
 
 #pragma IBActions
