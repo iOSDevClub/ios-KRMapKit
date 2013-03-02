@@ -18,9 +18,9 @@
 #import "NavigationViewController.h"
 #import "BookMarkTableView.h"
 
-#define GPSTimer 1.0f
-#define ToolBar1AnimationIsHidden 0
-#define ToolBar1AnimationNoHidden 1
+#define GPSTimer 1.0f                   //定位時間
+#define ToolBar1AnimationIsHidden 0     //ToolBar動畫向下翻轉
+#define ToolBar1AnimationNoHidden 1     //ToolBar動畫向上翻轉
 
 @class SelfMKAnnotationProtocol;
 
