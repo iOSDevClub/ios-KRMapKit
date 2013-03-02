@@ -152,6 +152,11 @@
 //任二點導航
 -(IBAction)anywhereDirection:(id)sender
 {
+    //無輸入值不做導航
+    if (startPlace.text.length == 0 || endPlace.text.length == 0){
+        return;
+    }
+    
     CLLocationCoordinate2D startGPSLocation;
     startGPSLocation.latitude  = [[startPoint objectAtIndex:1] floatValue];
     startGPSLocation.longitude = [[startPoint objectAtIndex:2] floatValue];
