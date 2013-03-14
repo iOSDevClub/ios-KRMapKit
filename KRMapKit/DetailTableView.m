@@ -2,9 +2,6 @@
 //  DetailTableView.m
 //  KRMapKit
 //
-//  Created by apple on 13/2/25.
-//  Copyright (c) 2013年 Kuo-Ming Lin. All rights reserved.
-//
 
 #import "DetailTableView.h"
 #import "RouteClass.h"
@@ -90,8 +87,6 @@
 {
     //印出當日全部記錄資料的總數, 方便確認迴圈需跑幾次
     //NSLog(@"infoListClass.infoListObject count:%d",[infoListClass.infoListObject count]);
-    if ([infoListClass.infoListObject count] == 0)
-        return;
     
     BOOL isFinish = FALSE, isStop = FALSE;
     int tempNumber = 1;
@@ -160,7 +155,6 @@
                     //若j+1等於totalCountArray count的話, 就代表已重新排序過
                     if (j+1 == [totalCountArray count]){
                         isFinish = TRUE;
-                        
                         //NSLog(@"%@",allDataArray);
                     }
                 }
@@ -187,9 +181,7 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     // Return the number of rows in the section.
-    
-    //取出判斷當天number加到多少的時候有加過1, 但是到DetailTableView的時候必需再減回1, 這樣才是coordinate.number的值
-    return coordinateNumber-1;
+    return coordinateNumber;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -240,53 +232,28 @@
     return cell;
 }
 
-//要使用self.editButtonItem事件的話, 必需實作此method
+/*
+// Override to support conditional editing of the table view.
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
 {
     // Return NO if you do not want the specified item to be editable.
     return YES;
 }
+*/
 
-//在self.editButtonItem中出現的按鈕事件
--(void) tableView:(UITableView *) tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle
-forRowAtIndexPath:(NSIndexPath *)indexPath
+/*
+// Override to support editing the table view.
+- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    //判斷為刪除按鈕
-    if (editingStyle == UITableViewCellEditingStyleDelete){
-        //刪除使用者選擇的資料, 並對應到Coordinate資料庫
-        [infoListClass deleteInfoCoordinatePath:indexPath.row+1];
-        
-        //取出資料庫的infoListObject
-        [infoListClass getAllCoordinate];
-        //重新配置這三個array
-        oldDataArray = [[NSMutableArray alloc] init];
-        allDataArray = [[NSMutableArray alloc] init];
-        totalCountArray = [[NSMutableArray alloc] init];
-        
-        //將infoListClass.infoListObject copy到oldDataArray第一個object (因為infoListClass.infoListObject只是一個object)
-        oldDataArray = [[NSMutableArray arrayWithObject:infoListClass.infoListObject] mutableCopy];
-        
-        //將所有的資料重新排序
-        [self arrangementAllCoordinate];
-        
-        //印出刪除後, 當日所有的coordinate data
-        /*
-         for (int i=0;i<[allDataArray count];i++){
-         NSLog(@"number:%d count:%d %02d:%02d:%02d",[[[allDataArray objectAtIndex:i] valueForKey:@"number"] intValue],
-                                                    [[[allDataArray objectAtIndex:i] valueForKey:@"count"] intValue],
-                                                    [[[allDataArray objectAtIndex:i] valueForKey:@"hour"] intValue],
-                                                    [[[allDataArray objectAtIndex:i] valueForKey:@"minute"] intValue],
-                                                    [[[allDataArray objectAtIndex:i] valueForKey:@"second"] intValue]);
-         }
-        */
-        
-        //因為coordinate data減1, 所以coordinateNumber就需要減1
-        coordinateNumber --;
-        
-        //重新載入tableView
-        [self.tableView reloadData];
-    }
+    if (editingStyle == UITableViewCellEditingStyleDelete) {
+        // Delete the row from the data source
+        [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
+    }   
+    else if (editingStyle == UITableViewCellEditingStyleInsert) {
+        // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
+    }   
 }
+*/
 
 /*
 // Override to support rearranging the table view.

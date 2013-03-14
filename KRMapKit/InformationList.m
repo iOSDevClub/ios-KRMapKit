@@ -2,8 +2,10 @@
 //  InformationList.m
 //  KRMapKit
 //
-//  Created by apple on 13/2/22.
-//  Copyright (c) 2013年 Kuo-Ming Lin. All rights reserved.
+//  wing50kimo@gmail.com
+//
+//  Created by Wayne Lai on 2013/01/01.
+//  Copyright (c) 2013年 Wayne Lai. All rights reserved.
 //
 
 #import "InformationList.h"
@@ -39,7 +41,16 @@
     return self;
 }
 
-#pragma InfoListDatas  ================================================================
+/*
+// Only override drawRect: if you perform custom drawing.
+// An empty implementation adversely affects performance during animation.
+- (void)drawRect:(CGRect)rect
+{
+    // Drawing code
+}
+*/
+
+#pragma InfoListDatas 
 
 //儲存當天的日期
 -(void) saveIndex:(int) index andYear:(int) year andMonth:(int) month andDay:(int) day
@@ -128,105 +139,7 @@
     infoListObject = [infoListSet allObjects];
 }
 
-//刪除infoListData資料
--(void) deleteInfoListDataPath:(int) path
-{
-    [self fetchInfoListDataAllInformation];
-    
-    infoListData = [results objectAtIndex:path];
-    
-    NSError *error;
-    
-    NSSet *infoListSet = infoListData.coordinate;
-    NSArray *infoListArray = [infoListSet allObjects];
-    
-    for (int i=0;i<[results count];i++){
-        infoListData = [results objectAtIndex:i];
-        
-        if (path == [infoListData.index intValue]){
-            //必需先刪除當天裡的所有資料
-            for (int i=0;i<[infoListArray count];i++){
-                
-                coordinate = [infoListArray objectAtIndex:i];
-                
-                [context deleteObject:coordinate];
-            }
-            
-            //NSLog(@"被刪除的index:%d", [infoListData.index intValue]);
-            
-            //刪完之後才可以刪掉當天的資料
-            [context deleteObject:infoListData];
-            
-            if (![context save:&error]){
-                NSLog(@"Error, Delete listData fail");
-            }else{
-                //NSLog(@"Result:%@",results);
-            }
-            [self fetchInfoListDataAllInformation];
-        }
-    }
-    
-    //因為受刪除日期的影響, 大於被刪除的infoListData.index必須重新給予新的index
-    for (int i=0;i<[results count];i++){
-        infoListData = [results objectAtIndex:i];
-        
-        if ([infoListData.index intValue] > path){
-            
-            infoListData.index = [NSNumber numberWithInt:[infoListData.index intValue]-1];
-            //NSLog(@"重新命名的index:%d", [infoListData.index intValue]);
-            
-            if (![context save:&error]){
-                NSLog(@"Error, Rename infoList.index fail");
-            }else{
-                //NSLog(@"Reults:%@", results);
-            }
-        }
-    }
-    [self fetchInfoListDataAllInformation];
-}
-
-//刪除infoListCoordinate資料
--(void) deleteInfoCoordinatePath:(int) path
-{
-    [self fetchInfoListDataAllInformation];
-    
-    NSSet *infoListSet = infoListData.coordinate;
-    NSArray *infoListArray = [infoListSet allObjects];
-    
-    //取得被刪除的coordinate number
-    for (int i =0;i<[infoListArray count];i++){
-        coordinate = [infoListArray objectAtIndex:i];
-        
-        if (path == [coordinate.number intValue]){
-            
-            //NSLog(@"被刪除的coordinate.number:%d",[coordinate.number intValue]);
-            
-            [context deleteObject:coordinate];
-        }
-    }
-    
-    NSError *error;
-    
-    //刪除後, 再重新命名比被刪除number大的number
-    for (int i=0;i<[infoListArray count];i++){
-        coordinate = [infoListArray objectAtIndex:i];
-        
-        if ([coordinate.number intValue] > path){
-            coordinate.number = [NSNumber numberWithInt:[coordinate.number intValue]-1];
-            //NSLog(@"重新命名的coordinat.number:%d",[coordinate.number intValue]);
-        }
-        
-        if (![context save:&error]){
-            NSLog(@"Error, Rename coordinate.number fail");
-        }else{
-            //NSLog(@"Coordinate:%@",coordinate);
-        }
-    }
-    
-    [self fetchInfoListDataAllInformation];
-}
-
-#pragma BookMark ================================================================
+#pragma BookMark 
 
 //儲存bookMark
 -(void) saveName:(NSString *) name Address:(NSString *) address Latitude:(float) lat Longitude:(float) lon
@@ -245,7 +158,7 @@
     if (![context save:&error]){
         NSLog(@"Error, Save index fail");
     }else{
-        //NSLog(@"bookMark:%@",bookMark);
+        NSLog(@"bookMark:%@",bookMark);
     }
     
     [self fetchBookMarkAllInformation];
@@ -280,9 +193,9 @@
     [context deleteObject:bookMark];
     
     if (![context save:&error]){
-        NSLog(@"Error, Delete bookMark fail");
+        NSLog(@"delete error");
     }else{
-        //NSLog(@"bookMarkResult:%@", bookMarkResults);
+        NSLog(@"bookMarkResult:%@", bookMarkResults);
     }
     
     [self fetchBookMarkAllInformation];
@@ -302,7 +215,7 @@
     if (![context save:&error]){
         NSLog(@"Error, Save index fail");
     }else{
-        //NSLog(@"bookMark:%@",bookMark);
+        NSLog(@"bookMark:%@",bookMark);
     }
     
     [self fetchBookMarkAllInformation];

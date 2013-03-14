@@ -3,7 +3,7 @@
 //  KRMapKit
 //
 //  Created by Lai Wen Yu on 13/2/25.
-//  Copyright (c) 2013年 Kuo-Ming Lin. All rights reserved.
+//  Copyright (c) 2013年 Wayne Lai. All rights reserved.
 //
 
 #import "HistoryTableView.h"
@@ -29,10 +29,6 @@
 -(void) viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    
-    [infoListClass getAllCoordinate];
-    
-    [self.tableView reloadData];
 }
 
 - (void)viewDidLoad
@@ -52,7 +48,7 @@
     
     defaultUser = [NSUserDefaults standardUserDefaults];
     
-    /*印出每一天以及每天紀錄的資料
+    /*  印出每一天以及每天紀錄的資料
     for (int i=0;i<[infoListClass.results count];i++){
         
         [defaultUser setObject:[NSNumber numberWithInt:i] forKey:@"index"];
@@ -149,31 +145,28 @@
     return cell;
 }
 
-//要使用self.editButtonItem事件的話, 必需實作此method
+/*
+// Override to support conditional editing of the table view.
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
 {
     // Return NO if you do not want the specified item to be editable.
     return YES;
 }
+*/
 
-//在self.editButtonItem中出現的按鈕事件
--(void) tableView:(UITableView *) tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle
-forRowAtIndexPath:(NSIndexPath *)indexPath
-{    
-    //判斷為刪除按鈕
-    if (editingStyle == UITableViewCellEditingStyleDelete){
-        //刪除使用者選擇的資料, 並對應到infoListData資料庫
-        [infoListClass deleteInfoListDataPath:indexPath.row];
-        //重新載入tableView
-        [self.tableView reloadData];
-        
-        /* 印出infoListData內的資料
-        for (int i=0;i<[infoListClass.results count];i++){
-            NSLog(@"重新命名的index:%@",[[infoListClass.results objectAtIndex:i] valueForKey:@"index"]);
-        }
-         */
-    }
+/*
+// Override to support editing the table view.
+- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (editingStyle == UITableViewCellEditingStyleDelete) {
+        // Delete the row from the data source
+        [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
+    }   
+    else if (editingStyle == UITableViewCellEditingStyleInsert) {
+        // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
+    }   
 }
+*/
 
 /*
 // Override to support rearranging the table view.

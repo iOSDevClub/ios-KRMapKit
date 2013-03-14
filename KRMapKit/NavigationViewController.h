@@ -2,8 +2,10 @@
 //  NavigationViewController.h
 //  KRMapKit
 //
-//  Created by Lai Wen Yu on 13/3/1.
-//  Copyright (c) 2013年 Kuo-Ming Lin. All rights reserved.
+//  wing50kimo@gmail.com
+//
+//  Created by Wayne Lai on 2013/01/01.
+//  Copyright (c) 2013年 Wayne Lai. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>

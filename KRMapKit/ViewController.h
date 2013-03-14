@@ -3,9 +3,10 @@
 //  KRMapKit
 //
 //  ilovekalvar@gmail.com
+//  wing50kimo@gmail.com
 //
-//  Created by Kuo-Ming Lin on 12/11/25.
-//  Copyright (c) 2012年 Kuo-Ming Lin. All rights reserved.
+//  Created by Kuo-Ming Lin & Wayne Lai on 2013/01/01.
+//  Copyright (c) 2013年 Kuo-Ming Lin & Wayne Lai. All rights reserved.
 //
 
 #import <CoreLocation/CoreLocation.h>
@@ -18,9 +19,9 @@
 #import "NavigationViewController.h"
 #import "BookMarkTableView.h"
 
-#define GPSTimer 1.0f                   //定位時間
-#define ToolBar1AnimationIsHidden 0     //ToolBar動畫向下翻轉
-#define ToolBar1AnimationNoHidden 1     //ToolBar動畫向上翻轉
+#define GPSTimer 10.0f
+#define ToolBar1AnimationIsHidden 0
+#define ToolBar1AnimationNoHidden 1
 
 @class SelfMKAnnotationProtocol;
 
@@ -34,9 +35,8 @@
     UIActivityIndicatorView *busy,*save;            //載入地圖和記錄路競時的特效動畫 View
     NSUserDefaults *defaultUser;                    //view與view傳值用的
     BOOL setup, isSave, stopScroll;                 //啟動設定的開關, 記錄開關
-    int saveCount, saveNumber, routeCount;          //記錄次數,筆數,路線次數
+    int saveCount, saveNumber, routeCount;          //記錄次數,筆數
     NSDateComponents *dateComp;                     //取得日期和時間
-    NSString *currentAddress;                       //取得目前地址
     InformationList *infoListClass;                 //All Information List class
     AppDelegate *appDelegate;                       //AppDelegate 協定
     HistoryTableView *historyTableView;             //歷史資料的tableView
@@ -45,7 +45,6 @@
     float tempLatitude, tempLongitude;              //在BookMark時, 取得使用者所選擇的緯度、經度
     NSString *tempAddress;                          //在BookMark時, 取得使用者所選擇的地址
     UIAlertView *bookMarkAlertView;
-    int pinCount;
 }
 
 @property (nonatomic, weak) IBOutlet MKMapView *mapView;                        //地圖
@@ -69,11 +68,11 @@
 //更新區域位置
 -(void)updateReginForLocation:(CLLocation *)newLocation keepSpan:(BOOL)keepSpan;
 //新增地圖標記
--(void)addAnnotationsForMapView:(MKMapView *)theMapView
-                    andLatitude:(float)latitude
-                   andLongitude:(float)longitude
-                       andTitle:(NSString *)title
-                   withSubtitle:(NSString *)subtitle;
+-(void)addAnnotationForMapView:(MKMapView *)_theMapView
+                      latitude:(float)_latitude
+                     longitude:(float)_longitude
+                         title:(NSString *)_theTitle
+                      subtitle:(NSString *)_subtitle;
 //記錄路徑軌跡
 -(IBAction) saveHistoryAction:(id) sender;
 //取得本地日期和時間

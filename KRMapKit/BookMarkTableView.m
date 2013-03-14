@@ -3,7 +3,7 @@
 //  KRMapKit
 //
 //  Created by Lai Wen Yu on 13/3/2.
-//  Copyright (c) 2013年 Kuo-Ming Lin. All rights reserved.
+//  Copyright (c) 2013年 Wayne Lai. All rights reserved.
 //
 
 #import "BookMarkTableView.h"
@@ -172,7 +172,7 @@
 
 //在self.editButtonItem中出現的按鈕事件
 -(void) tableView:(UITableView *) tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle
-forRowAtIndexPath:(NSIndexPath *)indexPath
+                                             forRowAtIndexPath:(NSIndexPath *)indexPath
 {
     //判斷為刪除按鈕
     if (editingStyle == UITableViewCellEditingStyleDelete){

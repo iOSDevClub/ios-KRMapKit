@@ -3,8 +3,7 @@
 //  KRMapKit
 //
 //  Created by apple on 13/2/27.
-//  Copyright (c) 2013年 Kuo-Ming Lin. All rights reserved.
-//
+
 
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>

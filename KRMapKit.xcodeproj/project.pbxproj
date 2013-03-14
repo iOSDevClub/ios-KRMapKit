@@ -32,7 +32,10 @@
 		8EA5398F16554C29001F8A9F /* ViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8EA5398D16554C29001F8A9F /* ViewController.xib */; };
 		8EA5399616554C69001F8A9F /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8EA5399516554C69001F8A9F /* MapKit.framework */; };
 		8EA5399816554D27001F8A9F /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8EA5399716554D27001F8A9F /* CoreLocation.framework */; };
-		8EA5399B16554FCF001F8A9F /* KRAnnotationProtocol.m in Sources */ = {isa = PBXBuildFile; fileRef = 8EA5399A16554FCF001F8A9F /* KRAnnotationProtocol.m */; };
+		8EFE828D16F1FB9800676048 /* KRAnnotationProtocol.m in Sources */ = {isa = PBXBuildFile; fileRef = 8EFE828A16F1FB9800676048 /* KRAnnotationProtocol.m */; };
+		8EFE828E16F1FB9800676048 /* KRAnnotationView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8EFE828C16F1FB9800676048 /* KRAnnotationView.m */; };
+		8EFE829216F1FC2C00676048 /* ele_author_small.png in Resources */ = {isa = PBXBuildFile; fileRef = 8EFE829016F1FC2C00676048 /* ele_author_small.png */; };
+		8EFE829316F1FC2C00676048 /* ele_author_small@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 8EFE829116F1FC2C00676048 /* ele_author_small@2x.png */; };
 		BA517B8A16E091D300692664 /* NavigationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BA517B8816E091D300692664 /* NavigationViewController.m */; };
 		BA517B8B16E091D300692664 /* NavigationViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = BA517B8916E091D300692664 /* NavigationViewController.xib */; };
 		BA517B9116E111C900692664 /* BookMarkTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = BA517B9016E111C900692664 /* BookMarkTableView.m */; };
@@ -76,8 +79,12 @@
 		8EA5398E16554C29001F8A9F /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/ViewController.xib; sourceTree = "<group>"; };
 		8EA5399516554C69001F8A9F /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		8EA5399716554D27001F8A9F /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
-		8EA5399916554FCF001F8A9F /* KRAnnotationProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KRAnnotationProtocol.h; sourceTree = "<group>"; };
-		8EA5399A16554FCF001F8A9F /* KRAnnotationProtocol.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KRAnnotationProtocol.m; sourceTree = "<group>"; };
+		8EFE828916F1FB9800676048 /* KRAnnotationProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KRAnnotationProtocol.h; sourceTree = "<group>"; };
+		8EFE828A16F1FB9800676048 /* KRAnnotationProtocol.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KRAnnotationProtocol.m; sourceTree = "<group>"; };
+		8EFE828B16F1FB9800676048 /* KRAnnotationView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KRAnnotationView.h; sourceTree = "<group>"; };
+		8EFE828C16F1FB9800676048 /* KRAnnotationView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KRAnnotationView.m; sourceTree = "<group>"; };
+		8EFE829016F1FC2C00676048 /* ele_author_small.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ele_author_small.png; sourceTree = "<group>"; };
+		8EFE829116F1FC2C00676048 /* ele_author_small@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ele_author_small@2x.png"; sourceTree = "<group>"; };
 		BA517B8716E091D300692664 /* NavigationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NavigationViewController.h; sourceTree = "<group>"; };
 		BA517B8816E091D300692664 /* NavigationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NavigationViewController.m; sourceTree = "<group>"; };
 		BA517B8916E091D300692664 /* NavigationViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NavigationViewController.xib; sourceTree = "<group>"; };
@@ -133,18 +140,20 @@
 			name = TableView;
 			sourceTree = "<group>";
 		};
-		18FBD3F816E05194001B5BF2 /* Encode & Decode Class */ = {
+		18FBD3F816E05194001B5BF2 /* Encode & Decode */ = {
 			isa = PBXGroup;
 			children = (
 				18834E7B16DC9E0500AD9315 /* RouteClass.h */,
 				18834E7C16DC9E0500AD9315 /* RouteClass.m */,
 			);
-			name = "Encode & Decode Class";
+			name = "Encode & Decode";
 			sourceTree = "<group>";
 		};
 		8EA5396616554C28001F8A9F = {
 			isa = PBXGroup;
 			children = (
+				8EFE828F16F1FC2C00676048 /* Images */,
+				8EFE828816F1FB9800676048 /* Classes */,
 				8EA5397816554C28001F8A9F /* KRMapKit */,
 				8EA5397916554C28001F8A9F /* Supporting Files */,
 				8EA5397116554C28001F8A9F /* Frameworks */,
@@ -180,8 +189,6 @@
 			children = (
 				8EA5398116554C28001F8A9F /* AppDelegate.h */,
 				8EA5398216554C28001F8A9F /* AppDelegate.m */,
-				8EA5399916554FCF001F8A9F /* KRAnnotationProtocol.h */,
-				8EA5399A16554FCF001F8A9F /* KRAnnotationProtocol.m */,
 				8EA5398A16554C28001F8A9F /* ViewController.h */,
 				8EA5398B16554C29001F8A9F /* ViewController.m */,
 				8EA5398D16554C29001F8A9F /* ViewController.xib */,
@@ -194,7 +201,7 @@
 				184D1EBE16D75C51008CD8BC /* InformationList.m */,
 				18FB7C5B16DB10C2000DDA01 /* TableView */,
 				18FB7C5716DB0ECB000DDA01 /* CoreData */,
-				18FBD3F816E05194001B5BF2 /* Encode & Decode Class */,
+				18FBD3F816E05194001B5BF2 /* Encode & Decode */,
 			);
 			path = KRMapKit;
 			sourceTree = "<group>";
@@ -212,6 +219,28 @@
 			);
 			name = "Supporting Files";
 			path = KRMapKit;
+			sourceTree = "<group>";
+		};
+		8EFE828816F1FB9800676048 /* Classes */ = {
+			isa = PBXGroup;
+			children = (
+				8EFE828916F1FB9800676048 /* KRAnnotationProtocol.h */,
+				8EFE828A16F1FB9800676048 /* KRAnnotationProtocol.m */,
+				8EFE828B16F1FB9800676048 /* KRAnnotationView.h */,
+				8EFE828C16F1FB9800676048 /* KRAnnotationView.m */,
+			);
+			name = Classes;
+			path = KRMapKit/Classes;
+			sourceTree = "<group>";
+		};
+		8EFE828F16F1FC2C00676048 /* Images */ = {
+			isa = PBXGroup;
+			children = (
+				8EFE829016F1FC2C00676048 /* ele_author_small.png */,
+				8EFE829116F1FC2C00676048 /* ele_author_small@2x.png */,
+			);
+			name = Images;
+			path = KRMapKit/Images;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -273,6 +302,8 @@
 				18FB7C5616DAFDCB000DDA01 /* ViewController4Inch.xib in Resources */,
 				BA517B8B16E091D300692664 /* NavigationViewController.xib in Resources */,
 				18FBD3F716E04D07001B5BF2 /* NavigationViewController4Inch.xib in Resources */,
+				8EFE829216F1FC2C00676048 /* ele_author_small.png in Resources */,
+				8EFE829316F1FC2C00676048 /* ele_author_small@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -286,7 +317,6 @@
 				8EA5397F16554C28001F8A9F /* main.m in Sources */,
 				8EA5398316554C28001F8A9F /* AppDelegate.m in Sources */,
 				8EA5398C16554C29001F8A9F /* ViewController.m in Sources */,
-				8EA5399B16554FCF001F8A9F /* KRAnnotationProtocol.m in Sources */,
 				184D1EBF16D75C51008CD8BC /* InformationList.m in Sources */,
 				184D1EC416D75FC2008CD8BC /* InfoListData.xcdatamodeld in Sources */,
 				189F783816D8B93200CDE21E /* Coordinate.m in Sources */,
@@ -297,6 +327,8 @@
 				18F27A5916DDC27500BB111A /* BookMark.m in Sources */,
 				BA517B8A16E091D300692664 /* NavigationViewController.m in Sources */,
 				BA517B9116E111C900692664 /* BookMarkTableView.m in Sources */,
+				8EFE828D16F1FB9800676048 /* KRAnnotationProtocol.m in Sources */,
+				8EFE828E16F1FB9800676048 /* KRAnnotationView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -3,9 +3,10 @@
 //  KRMapKit
 //
 //  ilovekalvar@gmail.com
+//  wing50kimo@gmail.com
 //
-//  Created by Kuo-Ming Lin on 12/11/25.
-//  Copyright (c) 2012年 Kuo-Ming Lin. All rights reserved.
+//  Created by Kuo-Ming Lin & Wayne Lai on 2013/01/01.
+//  Copyright (c) 2013年 Kuo-Ming Lin & Wayne Lai. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>

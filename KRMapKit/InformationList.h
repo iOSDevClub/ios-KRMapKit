@@ -2,8 +2,10 @@
 //  InformationList.h
 //  KRMapKit
 //
-//  Created by apple on 13/2/22.
-//  Copyright (c) 2013年 Kuo-Ming Lin. All rights reserved.
+//  wing50kimo@gmail.com
+//
+//  Created by Wayne Lai on 2013/01/01.
+//  Copyright (c) 2013年 Wayne Lai. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
@@ -45,10 +47,6 @@
                        Latitude:(float) lat Longitude:(float) lon;
 //取出infoListObject
 -(void) getAllCoordinate;
-//刪除infoListData資料
--(void) deleteInfoListDataPath:(int) path;
-//刪除infoListCoordinate資料
--(void) deleteInfoCoordinatePath:(int) path;
 
 //儲存BookMark
 -(void) saveName:(NSString *) name Address:(NSString *) address Latitude:(float) lat Longitude:(float) lon;

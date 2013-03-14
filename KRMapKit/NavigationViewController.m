@@ -2,8 +2,10 @@
 //  NavigationViewController.m
 //  KRMapKit
 //
-//  Created by Lai Wen Yu on 13/3/1.
-//  Copyright (c) 2013年 Kuo-Ming Lin. All rights reserved.
+//  wing50kimo@gmail.com
+//
+//  Created by Wayne Lai on 2013/01/01.
+//  Copyright (c) 2013年 Wayne Lai. All rights reserved.
 //
 
 #import "NavigationViewController.h"
@@ -152,11 +154,6 @@
 //任二點導航
 -(IBAction)anywhereDirection:(id)sender
 {
-    //無輸入值不做導航
-    if (startPlace.text.length == 0 || endPlace.text.length == 0){
-        return;
-    }
-    
     CLLocationCoordinate2D startGPSLocation;
     startGPSLocation.latitude  = [[startPoint objectAtIndex:1] floatValue];
     startGPSLocation.longitude = [[startPoint objectAtIndex:2] floatValue];

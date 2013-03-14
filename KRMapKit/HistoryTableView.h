@@ -3,7 +3,7 @@
 //  KRMapKit
 //
 //  Created by Lai Wen Yu on 13/2/25.
-//  Copyright (c) 2013年 Kuo-Ming Lin. All rights reserved.
+//  Copyright (c) 2013年 Wayne Lai. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>

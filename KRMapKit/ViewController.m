@@ -3,14 +3,16 @@
 //  KRMapKit
 //
 //  ilovekalvar@gmail.com
+//  wing50kimo@gmail.com
 //
-//  Created by Kuo-Ming Lin on 12/11/25.
-//  Copyright (c) 2012年 Kuo-Ming Lin. All rights reserved.
+//  Created by Kuo-Ming Lin & Wayne Lai on 2013/01/01.
+//  Copyright (c) 2013年 Kuo-Ming Lin & Wayne Lai. All rights reserved.
 //
 
 #import "ViewController.h"
 #import <MapKit/MKMapItem.h>
 #import "KRAnnotationProtocol.h"
+#import "KRAnnotationView.h"
 #import "RouteClass.h"
 
 @implementation ViewController
@@ -27,9 +29,6 @@
 -(void) viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    
-    //避免在HistoryTableView被刪除當天的資料, 再回到mapView的時候再加入當天的資料到資料庫
-    [self autoSaveCurrentDayData];
 }
 
 -(void) receivesNotification:(NSNotification *) notification
@@ -44,15 +43,55 @@
     }
 }
 
-//加入當天的資料到資料庫
--(void) autoSaveCurrentDayData
+//mapView定位初始
+-(void) locationCurrentPlace
 {
+    //設定 MapView 的委派
+    mapView.delegate          = self;
+    //允許縮放地圖
+    mapView.zoomEnabled       = YES;
+    //允許捲動地圖
+    mapView.scrollEnabled     = YES;
+    //以小藍點顯示使用者目前的位置
+    mapView.showsUserLocation = YES;
+    //CLLocationManager
+    locationManager = [[CLLocationManager alloc] init];
+    locationManager.delegate = self;
+    //設定精準度
+    [locationManager setDesiredAccuracy:kCLLocationAccuracyBestForNavigation];
+    //開始定位
+    [locationManager startUpdatingLocation];
+    //停止定位
+    //[locationManager stopUpdatingLocation];
+    //設定當使用者的位置超出 X 公尺後才呼叫其他定位方法 :: 預設為 kCLDistanceFilterNone
+    locationManager.distanceFilter = 10.0f;
+}
+
+-(void) viewDidLoad
+{
+    //mapView定位初始
+    [self locationCurrentPlace];
+    //顥示當前緯 / 經度
+    CLLocation *location = locationManager.location;
+    
     //初始infoListClass物件
     infoListClass = [[InformationList alloc] init];
+    
+    defaultUser = [NSUserDefaults standardUserDefaults];
     
     //判斷當天的日期是否已儲存過的flag
     BOOL isExist = NO;
     
+    //取得當地日期時間
+    dateComp = [ViewController getCurrnetDate];
+    
+    //textView 顯示:儲存次數, 年, 月, 日, 時, 分, 秒, 經度, 緯度, 地址
+    [infoTextView setText:[infoTextView.text stringByAppendingFormat:@"%04d-%02d-%02d-%02d:%02d:%02d\n緯度: %f 經度: %f \n地址:\n",
+                           dateComp.year, dateComp.month, dateComp.day, dateComp.hour, dateComp.minute, dateComp.second,
+                           location.coordinate.latitude, location.coordinate.longitude]];
+    
+    //NSLog(@"%d%d%d",dateComp.year, dateComp.month, dateComp.day);
+     
     //若無資料, 儲存當日的日期, index=0
     if ([infoListClass.results count] == 0){
         [infoListClass saveIndex:0 andYear:dateComp.year andMonth:dateComp.month andDay:dateComp.day];
@@ -89,53 +128,6 @@
         [defaultUser setObject:infoListClass.infoListData.index forKey:@"index"];
         NSLog(@"%@", infoListClass.results);
     }
-}
-
-//mapView定位初始
--(void) locationCurrentPlace
-{
-    //設定 MapView 的委派
-    mapView.delegate          = self;
-    //允許縮放地圖
-    mapView.zoomEnabled       = YES;
-    //允許捲動地圖
-    mapView.scrollEnabled     = YES;
-    //以小藍點顯示使用者目前的位置
-    mapView.showsUserLocation = YES;
-    //CLLocationManager
-    locationManager = [[CLLocationManager alloc] init];
-    locationManager.delegate = self;
-    //設定精準度
-    [locationManager setDesiredAccuracy:kCLLocationAccuracyBestForNavigation];
-    //開始定位
-    [locationManager startUpdatingLocation];
-    //停止定位
-    //[locationManager stopUpdatingLocation];
-    //設定當使用者的位置超出 X 公尺後才呼叫其他定位方法 :: 預設為 kCLDistanceFilterNone
-    locationManager.distanceFilter = 10.0f;
-}
-
--(void) viewDidLoad
-{
-    //mapView定位初始
-    [self locationCurrentPlace];
-    //顥示當前緯 / 經度
-    CLLocation *location = locationManager.location;
-    
-    defaultUser = [NSUserDefaults standardUserDefaults];
-    
-    //取得當地日期時間
-    dateComp = [ViewController getCurrnetDate];
-    
-    //textView 顯示:儲存次數, 年, 月, 日, 時, 分, 秒, 經度, 緯度, 地址
-    [infoTextView setText:[infoTextView.text stringByAppendingFormat:@"%04d-%02d-%02d-%02d:%02d:%02d\n緯度: %f 經度: %f \n地址:%@\n",
-                           dateComp.year, dateComp.month, dateComp.day, dateComp.hour, dateComp.minute, dateComp.second,
-                           location.coordinate.latitude, location.coordinate.longitude, currentAddress]];
-    
-    //NSLog(@"%d%d%d",dateComp.year, dateComp.month, dateComp.day);
-    
-    //加入當天的資料到資料庫
-    [self autoSaveCurrentDayData];
     
     //每秒更新時間和經度緯度的timer
     gpsTimer = [NSTimer scheduledTimerWithTimeInterval:GPSTimer target:self selector:@selector(dateTimer) userInfo:nil repeats:YES];
@@ -220,28 +212,27 @@
 }
 
 //新增地圖標記
--(void)addAnnotationsForMapView:(MKMapView *)theMapView
-                    andLatitude:(float)latitude
-                   andLongitude:(float)longitude
-                       andTitle:(NSString *)title
-                   withSubtitle:(NSString *)subtitle{
-    
+-(void)addAnnotationForMapView:(MKMapView *)_theMapView
+                      latitude:(float)_latitude
+                     longitude:(float)_longitude
+                         title:(NSString *)_theTitle
+                      subtitle:(NSString *)_subtitle
+{
     //宣告 GPS 定位的 2D 地圖物件
-    CLLocationCoordinate2D mapCenter;
-    //宣告自訂義的 Annotation (標記)物件
-    KRAnnotationProtocol *krAnno = [[KRAnnotationProtocol alloc] init];
-    //設定緯度
-    mapCenter.latitude  = latitude;
-    //設定經度
-    mapCenter.longitude = longitude;
     //設定標記物件裡的 GPS 定位地圖物件
-    krAnno.coordinate = mapCenter;
-    //設定標記的標題
-    krAnno.title = title;
-    //設定標記的內容
-    krAnno.subtitle = subtitle;
+    CLLocationCoordinate2D mapCenter;
+    //設定緯度
+    mapCenter.latitude  = _latitude;
+    //設定經度
+    mapCenter.longitude = _longitude;
+    //宣告自訂義的 Annotation (標記)物件
+    KRAnnotationProtocol *krAnno = [[KRAnnotationProtocol alloc] initWithCoordinate:mapCenter
+                                                                        customTitle:_theTitle
+                                                                     customSubtitle:_subtitle];
+    //設定圖片
+    krAnno.leftImage      = [UIImage imageNamed:@"ele_author_small.png"];
     //將標記加入地圖裡
-    [theMapView addAnnotation:krAnno];
+    [_theMapView addAnnotation:krAnno];
 }
 
 #pragma MKMapViewDelegate
@@ -278,70 +269,80 @@
     }
 }
 
-//使用地圖標記功能 : Annotation 註解/註釋/銓釋
--(MKAnnotationView *)mapView:(MKMapView *)theMapView viewForAnnotation:(id<MKAnnotation>)annotation{
-    //如果是現在的位置，就不要使用標記功能
-    if( [[annotation title] isEqualToString:@"Current Location"] ){
+/*
+ * @ 使用地圖標記 Pin ( Annotation )
+ *   - 動態加入大頭針
+ *   - 反解譯取得經緯度
+ */
+-(MKAnnotationView *)mapView:(MKMapView *)theMapView viewForAnnotation:(id<MKAnnotation>)annotation
+{
+    /*
+     * @ 如果是現在的位置，就不要使用標記功能
+     */
+    if( [annotation isKindOfClass:[MKUserLocation class]] )
+    {
         return nil;
     }
-    
-    static NSString *pinIdentifier = @"currentPin";
-    
-    //讓 Pin (標記元件) 是可以被重覆使用的
-    MKPinAnnotationView *pin = (MKPinAnnotationView *)[theMapView dequeueReusableAnnotationViewWithIdentifier:pinIdentifier];
-    //如果 Pin 不存在
-    if( pin == nil ){
-        //初始化
-        pin = [[MKPinAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:pinIdentifier];
+    //
+    KRAnnotationProtocol *_krAnnotation = (KRAnnotationProtocol *)annotation;
+    NSString *_reusePinId = @"_pinId";
+    /*
+     * @ Pin (標記元件) 是可以被重覆使用且客製化的
+     *   - 這裡先試著取出「已經被定義且使用者 MapView 上的 Pin」，之後就重複使用該 Pin。
+     *   - 原理跟 TableViewCell 的作動一樣。
+     *
+     * @ 原始為 MKPinAnnotationView ( 直接一個大頭針 View )
+     *   而 MKAnnotationView 則是一個「點」的大頭針，兩者不同。
+     *
+     */
+    KRAnnotationView *_krAnnotationView = (KRAnnotationView *)[theMapView dequeueReusableAnnotationViewWithIdentifier:_reusePinId];
+    if( _krAnnotationView == nil )
+    {
+        _krAnnotationView = [[KRAnnotationView alloc] initWithAnnotation:_krAnnotation reuseIdentifier:_reusePinId];
     }
-    
-    if (pinCount == 0){
-        //設定一般標記顏色
-        pin.pinColor = MKPinAnnotationColorPurple;
-    }
-    else if (pinCount == 1){
-        //設定起點標記綠色
-        pin.pinColor = MKPinAnnotationColorGreen;
-    }
-    else if (pinCount == 2){
-        //設定終點標記紅色
-        pin.pinColor = MKPinAnnotationColorRed;
-    }
-    
+    //設定標記顏色
+    //pin.pinColor = MKPinAnnotationColorPurple;
     //標記拖拉動畫
-    pin.animatesDrop = YES;
-    //標記呼喚
-    pin.canShowCallout = YES;
-    
+    //pin.animatesDrop = YES;
+    //Callout 彈出註釋呼喚 ( Default is NO )
+    _krAnnotationView.canShowCallout = YES;
+    //可以拖拉
+    //_krAnnotationView.draggable = YES;
     //點選標記時，說明的小圖示右方是一個單箭頭按鈕 : Accessory 附加物件
-    pin.rightCalloutAccessoryView = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
-    //pin.rightCalloutAccessoryView = UIButtonTypeCustom;
-    
-    return pin;
+    _krAnnotationView.rightCalloutAccessoryView = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
+    //pin.leftCalloutAccessoryView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"大頭針左側小圖.png"]];
+    return _krAnnotationView;
 }
 
-//反查目前定位的地址 (需有網路)
--(void) showCurrentAddress
+/*
+ * @ 當 Pin ( 大頭針 ) 的右側箭頭被按下時
+ */
+-(void)mapView:(MKMapView *)mapView annotationView:(MKAnnotationView *)view calloutAccessoryControlTapped:(UIControl *)control
 {
-    CLGeocoder *geocoder = [[CLGeocoder alloc] init];
-    
-    [geocoder reverseGeocodeLocation:locationManager.location
-                   completionHandler:^(NSArray *placeMarks, NSError *error){
-                       
-                       dispatch_async(dispatch_get_main_queue(), ^{
-                           if (placeMarks.count == 1){
-                               CLPlacemark *place = [placeMarks objectAtIndex:0];
-                               
-                               currentAddress = [[NSString alloc] initWithFormat:@"%@(%@)%@%@%@",
-                                                                          [place.addressDictionary valueForKey:@"Country"],
-                                                                          [place.addressDictionary valueForKey:@"ZIP"],
-                                                                          [place.addressDictionary valueForKey:@"State"],
-                                                                          [place.addressDictionary valueForKey:@"City"],
-                                                                          [place.addressDictionary valueForKey:@"Street"]];
-                               //NSLog(@"%@", currentAddress);
-                           }
-                       });
-    }];
+    if( [view.annotation isKindOfClass:[KRAnnotationProtocol class]] )
+    {
+        KRAnnotationProtocol *_krAnnotation = (KRAnnotationProtocol *)view.annotation;
+        NSString *_idIndex = _krAnnotation.idIndex;
+        if( _idIndex )
+        {
+            //... 看該 ID 底下的內容 Detail
+        }
+    }
+}
+
+/*
+ * @ 當選擇 Pin 時
+ *   - 此時才執行客製化 Pin 內容的動作
+ */
+-(void)mapView:(MKMapView *)mapView didSelectAnnotationView:(MKAnnotationView *)view
+{
+    if( [view isKindOfClass:[KRAnnotationView class]] )
+    {
+        KRAnnotationView *_krAnnotationView   = (KRAnnotationView *)view;
+        KRAnnotationProtocol *_krAnnotation   = (KRAnnotationProtocol *)_krAnnotationView.annotation;
+        _krAnnotationView.leftImageView = [[UIImageView alloc] initWithImage:_krAnnotation.leftImage];
+        [_krAnnotationView makeCustomContent];
+    }
 }
 
 //顯示地圖上歷史記錄的軌跡
@@ -361,7 +362,7 @@
     return overlayView;
 }
 
-//代入座標並顯室出路徑
+//代入座標並顯示出路徑
 -(void) showAllCoordinateOnMap
 {
     //decode, 使用者選擇的歷史路徑
@@ -414,23 +415,8 @@
     [mapView setVisibleMapRect:[routeLine boundingMapRect]];
     [mapView addOverlay:routeLine];
     
-    //在第一個座標插入大頭針插入大頭針, 綠色大頭針
-    pinCount = 1;
-    [self addAnnotationsForMapView:mapView
-                       andLatitude:[[latitudeArray objectAtIndex:0] doubleValue]
-                      andLongitude:[[longitudeArray objectAtIndex:0] doubleValue]
-                          andTitle:@"起點"
-                      withSubtitle:[addressArray objectAtIndex:0]];
-    
-    //在最後一個座標插入大頭針, 紅色大頭針
-    pinCount = 2;
-    [self addAnnotationsForMapView:mapView
-                       andLatitude:[[latitudeArray lastObject] doubleValue]
-                      andLongitude:[[longitudeArray lastObject] doubleValue]
-                          andTitle:@"終點"
-                      withSubtitle:[addressArray lastObject]];
-    //恢復正常的紫色
-    pinCount = 0;
+    //在最後一個座標插入大頭針
+    [self displayCoordinateWithPin:[[countArray lastObject] intValue]];
     
     //清除RouteArray
     [defaultUser setObject:NULL forKey:@"RouteArray"];
@@ -458,7 +444,7 @@
         [saveHistoryButton setTitle:@"記錄中..."];
         //轉吧～轉吧～
         save = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
-        [save setFrame:CGRectMake(295, 8, 30, 30)];
+        [save setFrame:CGRectMake(220, 8, 30, 30)];
         [save startAnimating];
         [toolBar1 addSubview:save];
         
@@ -498,26 +484,25 @@
 {
     //取得當地日期時間
     dateComp = [ViewController getCurrnetDate];
+    
     //顥示當前緯 / 經度
     CLLocation *location = locationManager.location;
-    //反查目前定位的地址
-    [self showCurrentAddress];
     
     if (isSave == FALSE){
         [infoTextView setText:@""];
         
         //textView 顯示:儲存次數, 年, 月, 日, 時, 分, 秒, 經度, 緯度, 地址
-        [infoTextView setText:[infoTextView.text stringByAppendingFormat:@"%04d-%02d-%02d-%02d:%02d:%02d\n緯度: %f 經度: %f \n地址:%@\n",
+        [infoTextView setText:[infoTextView.text stringByAppendingFormat:@"%04d-%02d-%02d-%02d:%02d:%02d\n緯度: %f 經度: %f \n地址:\n",
                            dateComp.year, dateComp.month, dateComp.day, dateComp.hour, dateComp.minute, dateComp.second,
-                           location.coordinate.latitude, location.coordinate.longitude, currentAddress]];
+                           location.coordinate.latitude, location.coordinate.longitude]];
     }
     else if (isSave == YES){
         //儲存次數+1
         saveCount++;
         //textView 顯示:儲存次數, 年, 月, 日, 時, 分, 秒, 經度, 緯度, 地址
-        [infoTextView setText:[infoTextView.text stringByAppendingFormat:@"(%d)%04d-%02d-%02d-%02d:%02d:%02d\n緯度: %f 經度: %f \n地址:%@\n",
+        [infoTextView setText:[infoTextView.text stringByAppendingFormat:@"(%d) %04d-%02d-%02d-%02d:%02d:%02d\n緯度: %f 經度: %f \n地址:\n",
                            saveNumber, dateComp.year, dateComp.month, dateComp.day, dateComp.hour, dateComp.minute, dateComp.second,
-                           location.coordinate.latitude, location.coordinate.longitude,currentAddress]];
+                           location.coordinate.latitude, location.coordinate.longitude]];
         
         if (stopScroll == FALSE){
             //取得textView高度範圍
@@ -526,16 +511,15 @@
             [infoTextView scrollRangeToVisible:range];
         }
         
-        //儲存時間, 地址, 經度, 緯度, 次數
+        //儲存時間, 經度, 緯度, 次數
         [infoListClass saveInformationDataHour:dateComp.hour Min:dateComp.minute Sec:dateComp.second
-                                          Addr:currentAddress
+                                          Addr:[NSString stringWithFormat:@"台中市 %d",saveCount]
                                          Count:saveCount Num:saveNumber
                                       Latitude:location.coordinate.latitude Longitude:location.coordinate.longitude];
         
         //NSLog(@"saveCount:%d",saveCount);
     }
     //NSLog(@"gpsTimer");
-    
 }
 
 //取得本地日期和時間
@@ -599,7 +583,7 @@
     [routeLineView removeFromSuperview];
     [mapView removeAnnotations:mapView.annotations];
  
-    //tooBar切換的小動畫
+    //toolBar切換的小動畫
     [self toolBarAnimation:ToolBar1AnimationNoHidden];
     
     [self locationCurrentPlace];
@@ -697,11 +681,11 @@
         }
     }
     //插入大頭針
-    [self addAnnotationsForMapView:mapView
-                       andLatitude:lat
-                      andLongitude:lon
-                          andTitle:[NSString stringWithFormat:@"%d",count]
-                      withSubtitle:address];
+    [self addAnnotationForMapView:mapView
+                         latitude:lat
+                        longitude:lon
+                            title:[NSString stringWithFormat:@"%d",count]
+                         subtitle:address];
     
     tempLatitude = lat;
     tempLongitude = lon;
@@ -782,7 +766,7 @@
     longitudeLabel.textAlignment = NSTextAlignmentLeft;
     [alertView addSubview:longitudeLabel];
     //顯示使用者選擇的地址
-    UILabel *addressLabel = [[UILabel alloc] initWithFrame:CGRectMake(15, 170, 240, 31)];
+    UILabel *addressLabel = [[UILabel alloc] initWithFrame:CGRectMake(15, 170, 200, 31)];
     addressLabel.text = [[NSString alloc] initWithFormat:@"地址_%@", tempAddress];
     addressLabel.backgroundColor = [UIColor clearColor];
     addressLabel.textColor = [UIColor whiteColor];

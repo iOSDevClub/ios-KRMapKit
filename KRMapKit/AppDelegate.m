@@ -3,9 +3,10 @@
 //  KRMapKit
 //
 //  ilovekalvar@gmail.com
+//  wing50kimo@gmail.com
 //
-//  Created by Kuo-Ming Lin on 12/11/25.
-//  Copyright (c) 2012年 Kuo-Ming Lin. All rights reserved.
+//  Created by Kuo-Ming Lin & Wayne Lai on 2013/01/01.
+//  Copyright (c) 2013年 Kuo-Ming Lin & Wayne Lai. All rights reserved.
 //
 
 #import "AppDelegate.h"
@@ -37,10 +38,9 @@
 
     self.viewController = [[ViewController alloc] initWithNibName:@"ViewController" bundle:nil];
     
-    [defaultUesr setObject:NULL forKey:@"4Inch"];
-    
     //依據不同型號做判斷 iPhone2,1=iPhone3GS...iPhone3,1=iPhone4...iPhone4,1=iPhine4...
-    if (([platform hasPrefix:@"iPhone"] || [platform hasPrefix:@"iPod"]) && self.window.screen.bounds.size.height > 480){
+    if (([platform hasPrefix:@"iPhone"] || [platform hasPrefix:@"iPod"] || [platform hasPrefix:@"x86_64"]) &&
+          self.window.screen.bounds.size.height > 480){
         
         [defaultUesr setObject:@"4Inch" forKey:@"4Inch"];
         self.viewController = [[ViewController alloc] initWithNibName:@"ViewController4Inch" bundle:[NSBundle mainBundle]];
