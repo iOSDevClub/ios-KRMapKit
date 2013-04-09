@@ -11,7 +11,7 @@
 #import "NavigationViewController.h"
 
 @interface NavigationViewController ()
-
+-(BOOL)hasBookMarkResults;
 @end
 
 @implementation NavigationViewController
@@ -28,9 +28,7 @@
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
-        bookMarkResults = [[NSMutableArray alloc] initWithArray:array];
-        
-        //NSLog(@"bookMarkResult:%@", [[bookMarkResults objectAtIndex:0] valueForKey:@"name"]);
+        bookMarkResults = [[NSMutableArray alloc] initWithArray:array];        
     }
     return self;
 }
@@ -53,6 +51,11 @@
     //nowLatitude = 0.0f;
     //nowLongitude = 0.0f;
     NSLog(@"%f %f", nowLatitude, nowLongitude);
+}
+
+#pragma mark - private method
+-(BOOL)hasBookMarkResults {
+    return ([bookMarkResults count] != 0);
 }
 
 #pragma UITextField delegate
@@ -80,20 +83,32 @@
 //滾輪項目
 -(NSInteger) pickerView:(UIPickerView *)pickerView numberOfRowsInComponent:(NSInteger)component
 {
-    //將bookMark的資料筆數代入滾輪會出現的資料
-    return [bookMarkResults count];
+    // 將bookMark的資料筆數代入滾輪會出現的資料
+    // 若array沒值，要回傳1否則會crash
+    return [self hasBookMarkResults]?[bookMarkResults count]:1;
 }
 
 //滾輪資料
 -(NSString *) pickerView:(UIPickerView *)pickerView titleForRow:(NSInteger)row forComponent:(NSInteger)component
 {
     //將bookMark的資料代入滾輪的欄位
-    return [[bookMarkResults objectAtIndex:row] valueForKey:@"name"];
+    NSString *result = nil;
+    if ([self hasBookMarkResults]) {
+        result = [[bookMarkResults objectAtIndex:row] valueForKey:@"name"];
+    } else {
+        result = @"書籤無資料";
+    }
+    
+    return result;
 }
 
 //滾輪的第一個欄位代入startPlace.text、滾輪第二個欄位代入endPlace.text
 -(void) pickerView:(UIPickerView *)pickerView didSelectRow:(NSInteger)row inComponent:(NSInteger)component
 {
+    if (![self hasBookMarkResults]) {
+        goto EXIT;
+    }
+    
     //清空startPoint array
     [startPoint removeAllObjects];
     //清空endPoint array
@@ -117,6 +132,9 @@
     [endPoint addObject:[[bookMarkResults objectAtIndex:[pickerView selectedRowInComponent:1]] valueForKey:@"name"]];
     [endPoint addObject:[[bookMarkResults objectAtIndex:[pickerView selectedRowInComponent:1]] valueForKey:@"latitude"]];
     [endPoint addObject:[[bookMarkResults objectAtIndex:[pickerView selectedRowInComponent:1]] valueForKey:@"longitude"]];
+    
+EXIT:
+    return;
 }
 
 -(IBAction) getNowCoordinate:(id) sender
@@ -155,34 +173,61 @@
 -(IBAction)anywhereDirection:(id)sender
 {
     CLLocationCoordinate2D startGPSLocation;
+    CLLocationCoordinate2D endGPSLocation;
+    
+    NSDictionary *options = nil;
+    MKPlacemark *place1 = nil;
+    MKMapItem *destination1 = nil;
+    MKPlacemark *place2 = nil;
+    MKMapItem *destination2 = nil;
+    NSArray *items = nil;
+
+    // check startPoint and endPoint if has value
+    NSString *errMsg = nil;
+    if ([startPoint count] < 3) {
+        errMsg = @"尚未指定起點";
+        goto EXIT;
+    }
+    
+    if ([endPoint count] < 3) {
+        errMsg = @"尚未指定終點";
+        goto EXIT;
+    }
+    
+    
     startGPSLocation.latitude  = [[startPoint objectAtIndex:1] floatValue];
     startGPSLocation.longitude = [[startPoint objectAtIndex:2] floatValue];
  
-    CLLocationCoordinate2D endGPSLocation;
     endGPSLocation.latitude  = [[endPoint objectAtIndex:1] floatValue];
     endGPSLocation.longitude = [[endPoint objectAtIndex:2] floatValue];
     
     //啟動任二點的導航路徑規劃
-    NSDictionary* options = [[NSDictionary alloc] initWithObjectsAndKeys:MKLaunchOptionsDirectionsModeDriving,
+    options = [[NSDictionary alloc] initWithObjectsAndKeys:MKLaunchOptionsDirectionsModeDriving,
                                                                          MKLaunchOptionsDirectionsModeKey, nil];
     //顯示起點的名稱
-    MKPlacemark *place1 = [[MKPlacemark alloc] initWithCoordinate:startGPSLocation addressDictionary:nil];
-    MKMapItem *destination1 = [[MKMapItem alloc] initWithPlacemark:place1];
+    place1 = [[MKPlacemark alloc] initWithCoordinate:startGPSLocation addressDictionary:nil];
+    destination1 = [[MKMapItem alloc] initWithPlacemark:place1];
     destination1.name = [startPoint objectAtIndex:0];
     
     //顯示終點的名稱
-    MKPlacemark *place2 = [[MKPlacemark alloc] initWithCoordinate:endGPSLocation addressDictionary:nil];
-    MKMapItem *destination2 = [[MKMapItem alloc] initWithPlacemark:place2];
+    place2 = [[MKPlacemark alloc] initWithCoordinate:endGPSLocation addressDictionary:nil];
+    destination2 = [[MKMapItem alloc] initWithPlacemark:place2];
     destination2.name = [endPoint objectAtIndex:0];
     
     NSLog(@"%@ %@ %@", [startPoint objectAtIndex:1], [startPoint objectAtIndex:2], [startPoint objectAtIndex:0]);
     NSLog(@"%@ %@ %@", [endPoint objectAtIndex:1], [endPoint objectAtIndex:2], [endPoint objectAtIndex:0]);
     
     //陣列第 1 個為出發地點，第二個為導航目的地
-    NSArray *items = [[NSArray alloc] initWithObjects:destination1, destination2, nil];
+    items = [[NSArray alloc] initWithObjects:destination1, destination2, nil];
     
     //導航
     [MKMapItem openMapsWithItems:items launchOptions:options];
+    
+EXIT:
+    if (errMsg) {
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"錯誤" message:errMsg delegate:nil cancelButtonTitle:@"好" otherButtonTitles:nil];
+        [alert show];
+    }
 }
 
 //返回ViewController
